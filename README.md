@@ -67,9 +67,34 @@ The included CSV files are sample files for demonstration and testing purposes o
 - Add better error messages
 - Add a simple user interface
 - Support more flexible column name mapping
+
+- 
 - Add export templates for reports
 - Improve documentation for non-technical users
 
 ## License
 
 MIT License
+
+---
+
+## 日本語説明
+
+Pharmacy CSV Matcher JP は、日本の薬局業務で発生しやすいCSV突合作業を支援するExcel/VBAツールです。
+
+採用品CSV、在庫CSV、対象品目リストCSVを照合し、条件に一致する品目をExcelシートに出力します。
+
+薬局現場では、商品コードやJANコードがCSV上で指数表記になったり、先頭ゼロが消えたり、Excel上で丸められたりすることがあります。そのため、このツールでは商品コードだけに頼らず、品名・規格容量・メーカーを組み合わせたキーで照合する設計にしています。
+
+## 想定している利用者
+
+- 薬局薬剤師
+- 薬局管理者
+- 在庫管理担当者
+- Excelで薬局内データを管理している人
+
+## 注意事項
+
+このリポジトリには、実店舗の在庫データ、患者情報、卸由来の非公開データは含まれていません。
+
+含まれているCSVは、公開用に作成したダミーデータです。
