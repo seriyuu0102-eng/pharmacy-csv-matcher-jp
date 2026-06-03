@@ -71,6 +71,21 @@ The included CSV files are sample files for demonstration and testing purposes o
 - 
 - Add export templates for reports
 - Improve documentation for non-technical users
+- ## Screenshots
+
+### VBA module import
+![VBA import](images/vba-import-sample.png)
+
+### CSV file selection
+![CSV selection](images/csv-selection-sample.png)
+
+### Output worksheet example
+![Excel output](images/excel-output-sample.png)
+
+## Development Status
+
+This project is in an early development stage.
+Planned improvements are tracked in GitHub Issues, including better CSV column detection, Japanese documentation, and Excel workflow screenshots.
 
 ## License
 
