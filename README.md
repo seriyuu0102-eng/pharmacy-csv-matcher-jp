@@ -91,6 +91,28 @@ Planned improvements are tracked in GitHub Issues, including better CSV column d
 
 MIT License
 
+## Development Status
+
+This project is in an early development stage.
+
+Completed:
+- Initial Excel/VBA matching module
+- Dummy sample CSV files
+- Japanese usage explanation
+- Excel workflow screenshots
+
+Planned:
+- Better CSV column name detection
+- More flexible matching rules
+- Improved error messages
+- Easier setup for non-technical users
+
+## Privacy and Safety
+
+This repository does not include patient data, real pharmacy inventory data, real store information, or confidential business data.
+
+All CSV files and screenshots are created with dummy data for demonstration purposes only.
+
 ---
 
 ## 日本語説明
