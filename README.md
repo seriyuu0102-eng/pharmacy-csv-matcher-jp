@@ -32,13 +32,13 @@ The workbook also creates a matching log with counts for each stage.
 
 ## Features
 
-- Excel/VBA only; no external runtime required
+- Excel/VBA only; no external runtime required for normal use
 - matches by normalized product name, package size, and manufacturer
 - avoids fragile matching based only on JAN/product codes
 - accepts common alternative CSV header names in Japanese and English
 - restores Excel display settings if processing fails
 - exports a human-readable result sheet and processing log
-- includes dummy CSV files for demonstration and testing
+- includes dummy CSV files for demonstration and reproducible compatibility testing
 
 ## Supported header aliases
 
@@ -64,9 +64,15 @@ pharmacy_csv_matcher_sample/
 ├── sample_adopted_items.csv
 ├── sample_inventory.csv
 └── sample_target_items.csv
+
+tests/
+├── README.md
+└── fixtures/
+    ├── ja_alias/
+    └── en_alias/
 ```
 
-All sample files contain dummy data only.
+All sample and fixture files contain dummy data only.
 
 ## How to use
 
@@ -76,6 +82,20 @@ All sample files contain dummy data only.
 4. Run `RunPharmacyCsvMatcher`.
 5. Select the adopted-items CSV, inventory CSV, and target-items CSV when prompted.
 6. Review the generated `突合結果` and `突合ログ` worksheets.
+
+## Testing
+
+The repository includes reproducible manual integration fixtures for the canonical Japanese headers, common Japanese aliases, and common English aliases.
+
+Expected output counts are documented in `tests/README.md`:
+
+- canonical sample: 4 matched rows
+- Japanese alias fixture: 2 matched rows
+- English alias fixture: 2 matched rows
+
+Each compatibility fixture also contains `expected_matches.csv` so the output can be checked by product, not only by row count.
+
+The committed fixtures use UTF-8 with a BOM. CP932 / Shift-JIS behavior can vary with the local Windows and Excel environment and is documented as an environment-dependent compatibility area rather than being claimed as universally supported.
 
 ## Screenshots
 
@@ -110,9 +130,10 @@ All CSV files and screenshots are demonstration data. Contributors should never 
 
 The project is under active maintenance. Current work focuses on:
 
-- broader CSV header compatibility
+- broader CSV export compatibility
 - clearer validation and error handling
-- reproducible test cases for different export formats
+- repeatable regression checks for supported fixtures
+- explicit Windows/Excel encoding compatibility notes
 - documentation for non-technical Excel users
 
 Roadmap work is tracked in GitHub Issues.
@@ -134,5 +155,7 @@ Pharmacy CSV Matcher JP は、日本の薬局業務で発生しやすいCSV突�
 採用品CSV・在庫CSV・対象品目CSVを照合し、条件に一致した品目をExcelシートへ出力します。商品コードやJANはExcel上で指数表記、丸め、先頭ゼロ消失が起きることがあるため、主な突合キーには「品名 + 規格容量 + メーカー」を使用しています。
 
 現在は、CSVごとの列名揺れに対応するため、「商品名」「医薬品名」「製造販売元」「在庫数量」などの代表的な別名も自動認識します。
+
+`tests/fixtures/` には、日本語の列名揺れと英語列名を再現するダミーCSVを用意しており、期待される出力件数・対象品目を確認できます。
 
 このリポジトリには患者情報、実店舗の在庫データ、仕入条件、卸由来の非公開データは含めません。公開用サンプルはすべてダミーデータです。
