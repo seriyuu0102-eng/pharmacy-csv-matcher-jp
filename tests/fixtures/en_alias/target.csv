@@ -1,0 +1,4 @@
+﻿drug name,spec,manufacturer,target category,brand name,notes
+Sample Alpha 5mg,100 tablets,Demo Pharma,target,Sample Alpha 5mg,English alias headers
+Sample Beta 10mg,100 tablets,Fictional Labs Inc.,target,Sample Beta 10mg,English alias headers
+Zero Stock 20mg,100 tablets,Example Pharma,target,Zero Stock 20mg,Excluded because stock is zero
