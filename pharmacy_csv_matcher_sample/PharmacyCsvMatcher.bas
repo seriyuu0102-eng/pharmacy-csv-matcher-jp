@@ -9,6 +9,8 @@ Option Explicit
 Public Sub RunPharmacyCsvMatcher()
     Dim adoptedPath As String, inventoryPath As String, targetPath As String
 
+    On Error GoTo HandleError
+
     adoptedPath = PickCsvFile("採用品CSVを選択してください")
     If adoptedPath = "" Then Exit Sub
 
@@ -19,6 +21,10 @@ Public Sub RunPharmacyCsvMatcher()
     If targetPath = "" Then Exit Sub
 
     MatchPharmacyCsvFiles adoptedPath, inventoryPath, targetPath
+    Exit Sub
+
+HandleError:
+    MsgBox "処理を中止しました。" & vbCrLf & Err.Description, vbExclamation
 End Sub
 
 Private Sub MatchPharmacyCsvFiles(ByVal adoptedPath As String, ByVal inventoryPath As String, ByVal targetPath As String)
@@ -30,6 +36,12 @@ Private Sub MatchPharmacyCsvFiles(ByVal adoptedPath As String, ByVal inventoryPa
     Dim resultWs As Worksheet, logWs As Worksheet
     Dim totalInventory As Long, stockPositiveCount As Long
     Dim adoptedMatchedCount As Long, targetMatchedCount As Long, outputCount As Long
+    Dim previousScreenUpdating As Boolean, previousDisplayAlerts As Boolean
+    Dim errorText As String
+
+    previousScreenUpdating = Application.ScreenUpdating
+    previousDisplayAlerts = Application.DisplayAlerts
+    On Error GoTo CleanFail
 
     Application.ScreenUpdating = False
     Application.DisplayAlerts = False
@@ -136,12 +148,19 @@ Private Sub MatchPharmacyCsvFiles(ByVal adoptedPath As String, ByVal inventoryPa
         .Range("A9").Font.Bold = True
     End With
 
-    Application.DisplayAlerts = True
-    Application.ScreenUpdating = True
+    Application.DisplayAlerts = previousDisplayAlerts
+    Application.ScreenUpdating = previousScreenUpdating
 
     MsgBox "突合が完了しました。" & vbCrLf & _
            "出力件数: " & outputCount & "件" & vbCrLf & _
            "詳細は「突合結果」「突合ログ」を確認してください。", vbInformation
+    Exit Sub
+
+CleanFail:
+    errorText = Err.Description
+    Application.DisplayAlerts = previousDisplayAlerts
+    Application.ScreenUpdating = previousScreenUpdating
+    Err.Raise vbObjectError + 102, "PharmacyCsvMatcher", errorText
 End Sub
 
 Private Sub WriteResultRow(ByVal ws As Worksheet, ByVal outRow As Long, _
@@ -187,17 +206,70 @@ End Function
 
 Private Function HeaderMap(ByRef data As Variant) As Object
     Dim dict As Object
-    Dim c As Long, headerName As String
+    Dim c As Long, headerName As String, canonicalName As String
 
     Set dict = CreateObject("Scripting.Dictionary")
     For c = 1 To UBound(data, 2)
-        headerName = Trim(CStr(data(1, c)))
+        headerName = Trim$(CStr(data(1, c)))
         If headerName <> "" Then
             If Not dict.Exists(headerName) Then dict.Add headerName, c
+
+            canonicalName = CanonicalHeaderName(headerName)
+            If canonicalName <> "" Then
+                If Not dict.Exists(canonicalName) Then dict.Add canonicalName, c
+            End If
         End If
     Next c
 
     Set HeaderMap = dict
+End Function
+
+Private Function CanonicalHeaderName(ByVal headerName As String) As String
+    Dim normalized As String
+    normalized = NormalizeHeaderName(headerName)
+
+    Select Case normalized
+        Case "品名", "商品名", "医薬品名", "薬品名", "drugname", "productname", "itemname", "medicinename"
+            CanonicalHeaderName = "品名"
+        Case "規格容量", "規格", "規格容量包装", "包装規格", "specification", "spec", "packagesize"
+            CanonicalHeaderName = "規格容量"
+        Case "メーカー", "メーカー名", "製造会社", "製造販売元", "製造元", "manufacturer", "maker"
+            CanonicalHeaderName = "メーカー"
+        Case "在庫数", "在庫数量", "在庫量", "数量", "stockqty", "stockquantity", "inventoryqty", "inventoryquantity"
+            CanonicalHeaderName = "在庫数"
+        Case "店舗", "店舗名", "薬局", "薬局名", "store", "storename", "pharmacy", "pharmacyname"
+            CanonicalHeaderName = "店舗"
+        Case "単位", "unit"
+            CanonicalHeaderName = "単位"
+        Case "商品コード", "商品cd", "医薬品コード", "jan", "jancode", "productcode", "itemcode"
+            CanonicalHeaderName = "商品コード"
+        Case "対象区分", "区分", "category", "targetcategory"
+            CanonicalHeaderName = "対象区分"
+        Case "先発品名", "先発名", "brandname", "originatorname"
+            CanonicalHeaderName = "先発品名"
+        Case "備考", "注記", "メモ", "note", "notes", "memo"
+            CanonicalHeaderName = "備考"
+        Case Else
+            CanonicalHeaderName = ""
+    End Select
+End Function
+
+Private Function NormalizeHeaderName(ByVal v As Variant) As String
+    Dim s As String
+    s = LCase$(Trim$(CStr(v)))
+    s = Replace(s, "　", "")
+    s = Replace(s, " ", "")
+    s = Replace(s, vbTab, "")
+    s = Replace(s, "_", "")
+    s = Replace(s, "-", "")
+    s = Replace(s, "・", "")
+    s = Replace(s, "/", "")
+    s = Replace(s, "／", "")
+    s = Replace(s, "（", "")
+    s = Replace(s, "）", "")
+    s = Replace(s, "(", "")
+    s = Replace(s, ")", "")
+    NormalizeHeaderName = s
 End Function
 
 Private Sub ValidateHeaders(ByVal header As Object, ByVal requiredHeaders As Variant, ByVal csvName As String)
