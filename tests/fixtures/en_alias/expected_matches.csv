@@ -1,0 +1,3 @@
+﻿product name,package size,manufacturer,expected result
+Sample Alpha 5mg,100 tablets,Demo Pharma,match
+Sample Beta 10mg,100 tablets,Fictional Labs Inc.,match
