@@ -1,117 +1,129 @@
 # Pharmacy CSV Matcher JP
 
-Open-source Excel/VBA CSV matching tool for Japanese community pharmacies.
+Open-source Excel/VBA tooling for CSV matching workflows in Japanese community pharmacies.
 
-## Overview
+## Why this project exists
 
-Pharmacy CSV Matcher JP is an Excel/VBA tool designed to help Japanese community pharmacies compare multiple CSV files, such as adopted medicine lists, inventory data, and target medicine lists.
+Pharmacy CSV exports are often difficult to compare reliably in Excel. Product codes and JAN values can be converted to scientific notation, lose leading zeros, or be rounded during CSV/Excel handling.
 
-The tool is intended to reduce manual checking work and prevent matching errors caused by unstable product codes, scientific notation, lost leading zeros, and CSV formatting issues.
+Pharmacy CSV Matcher JP avoids using product codes as the primary matching key. Instead, it matches records using a normalized combination of:
+
+```text
+品名 + 規格容量 + メーカー
+```
+
+The goal is to reduce repetitive manual checking while keeping the workflow understandable and editable for pharmacy staff who already use Excel.
+
+## What it does
+
+The sample workflow compares three CSV files:
+
+1. adopted item list
+2. current inventory
+3. target item list
+
+Rows are exported to an Excel worksheet when all of the following are true:
+
+- inventory quantity is greater than zero
+- the item exists in the adopted item list
+- the item exists in the target item list
+
+The workbook also creates a matching log with counts for each stage.
 
 ## Features
 
-- Match adopted item lists and inventory CSV files
-- Compare against target medicine lists
-- Export matched results to an Excel worksheet
-- Avoid failures caused by scientific notation in product codes
-- Use product name, specification, and manufacturer as stable matching keys
-- Provide sample CSV files for testing
+- Excel/VBA only; no external runtime required
+- matches by normalized product name, package size, and manufacturer
+- avoids fragile matching based only on JAN/product codes
+- accepts common alternative CSV header names in Japanese and English
+- restores Excel display settings if processing fails
+- exports a human-readable result sheet and processing log
+- includes dummy CSV files for demonstration and testing
 
-## Included Sample Files
+## Supported header aliases
 
-The sample files are included in the `pharmacy_csv_matcher_sample` folder.
+The current matcher recognizes several common alternatives and maps them to canonical fields.
 
-- `sample_adopted_items.csv`
-- `sample_inventory.csv`
-- `sample_target_items.csv`
-- `PharmacyCsvMatcher.bas`
+| Canonical field | Examples of accepted aliases |
+| --- | --- |
+| 品名 | 商品名, 医薬品名, 薬品名, product name, item name, drug name |
+| 規格容量 | 規格, 包装規格, specification, package size |
+| メーカー | メーカー名, 製造会社, 製造販売元, manufacturer, maker |
+| 在庫数 | 在庫数量, 数量, stock quantity, inventory quantity |
+| 店舗 | 店舗名, 薬局名, store name, pharmacy name |
+| 商品コード | 医薬品コード, JAN, JAN code, product code |
+
+Exact support is implemented in `PharmacyCsvMatcher.bas`.
+
+## Repository contents
+
+```text
+pharmacy_csv_matcher_sample/
+├── PharmacyCsvMatcher.bas
+├── README.md
+├── sample_adopted_items.csv
+├── sample_inventory.csv
+└── sample_target_items.csv
+```
 
 All sample files contain dummy data only.
 
-## Intended Users
+## How to use
 
-- Community pharmacists
-- Pharmacy managers
-- Medical inventory administrators
-- Healthcare professionals who use Excel-based workflows
+1. Open Excel and create or open a macro-enabled workbook (`.xlsm`).
+2. Open the VBA editor.
+3. Import `pharmacy_csv_matcher_sample/PharmacyCsvMatcher.bas`.
+4. Run `RunPharmacyCsvMatcher`.
+5. Select the adopted-items CSV, inventory CSV, and target-items CSV when prompted.
+6. Review the generated `突合結果` and `突合ログ` worksheets.
 
-## Use Cases
-
-This tool may be useful when a pharmacy needs to:
-
-- Check whether stocked items are included in an adopted item list
-- Compare inventory data against a target medicine list
-- Reduce manual lookup work
-- Prepare internal reports based on CSV exports
-- Avoid errors caused by product code formatting problems
-
-## How to Use
-
-1. Open Excel.
-2. Create or open a macro-enabled workbook.
-3. Open the VBA editor.
-4. Import `PharmacyCsvMatcher.bas` from the `pharmacy_csv_matcher_sample` folder.
-5. Run `RunPharmacyCsvMatcher`.
-6. Select the adopted item CSV, inventory CSV, and target item CSV.
-7. Review the output worksheet.
-
-## Important Notes
-
-This project does not include real pharmacy data, patient data, or confidential business data.
-
-The included CSV files are sample files for demonstration and testing purposes only.
-
-## Roadmap
-
-- Improve CSV format auto-detection
-- Add better error messages
-- Add a simple user interface
-- Support more flexible column name mapping
-
-- 
-- Add export templates for reports
-- Improve documentation for non-technical users
-- ## Screenshots
-
-### VBA module import
-![VBA import](images/vba-import-sample.png)
+## Screenshots
 
 ### CSV file selection
-![CSV selection](images/csv-selection-sample.png)
+
+![CSV selection](image/csv-selection-sample.jpg)
 
 ### Output worksheet example
-![Excel output](images/excel-output-sample.png)
 
-## Development Status
+![Excel output](image/excel-output-sample.jpg)
 
-This project is in an early development stage.
-Planned improvements are tracked in GitHub Issues, including better CSV column detection, Japanese documentation, and Excel workflow screenshots.
+## Intended users
+
+- community pharmacists
+- pharmacy managers
+- medical inventory administrators
+- healthcare staff working with Excel-based CSV exports
+
+## Project scope
+
+This repository intentionally focuses on a narrow workflow: transparent CSV matching that can be reviewed and modified in standard Excel/VBA.
+
+It is not intended to replace pharmacy dispensing systems, inventory platforms, or validated clinical software. Matching results should be reviewed before they are used for operational decisions.
+
+## Privacy and safety
+
+This repository does not include patient data, real pharmacy inventory data, real store information, purchasing conditions, or wholesaler-confidential data.
+
+All CSV files and screenshots are demonstration data. Contributors should never submit real patient information or confidential business data.
+
+## Development status
+
+The project is under active maintenance. Current work focuses on:
+
+- broader CSV header compatibility
+- clearer validation and error handling
+- reproducible test cases for different export formats
+- documentation for non-technical Excel users
+
+Roadmap work is tracked in GitHub Issues.
+
+## Contributing
+
+Bug reports, compatibility examples, documentation improvements, and focused pull requests are welcome. See `CONTRIBUTING.md` before submitting data samples or code changes.
 
 ## License
 
-MIT License
-
-## Development Status
-
-This project is in an early development stage.
-
-Completed:
-- Initial Excel/VBA matching module
-- Dummy sample CSV files
-- Japanese usage explanation
-- Excel workflow screenshots
-
-Planned:
-- Better CSV column name detection
-- More flexible matching rules
-- Improved error messages
-- Easier setup for non-technical users
-
-## Privacy and Safety
-
-This repository does not include patient data, real pharmacy inventory data, real store information, or confidential business data.
-
-All CSV files and screenshots are created with dummy data for demonstration purposes only.
+MIT License. See `LICENSE`.
 
 ---
 
@@ -119,19 +131,8 @@ All CSV files and screenshots are created with dummy data for demonstration purp
 
 Pharmacy CSV Matcher JP は、日本の薬局業務で発生しやすいCSV突合作業を支援するExcel/VBAツールです。
 
-採用品CSV、在庫CSV、対象品目リストCSVを照合し、条件に一致する品目をExcelシートに出力します。
+採用品CSV・在庫CSV・対象品目CSVを照合し、条件に一致した品目をExcelシートへ出力します。商品コードやJANはExcel上で指数表記、丸め、先頭ゼロ消失が起きることがあるため、主な突合キーには「品名 + 規格容量 + メーカー」を使用しています。
 
-薬局現場では、商品コードやJANコードがCSV上で指数表記になったり、先頭ゼロが消えたり、Excel上で丸められたりすることがあります。そのため、このツールでは商品コードだけに頼らず、品名・規格容量・メーカーを組み合わせたキーで照合する設計にしています。
+現在は、CSVごとの列名揺れに対応するため、「商品名」「医薬品名」「製造販売元」「在庫数量」などの代表的な別名も自動認識します。
 
-## 想定している利用者
-
-- 薬局薬剤師
-- 薬局管理者
-- 在庫管理担当者
-- Excelで薬局内データを管理している人
-
-## 注意事項
-
-このリポジトリには、実店舗の在庫データ、患者情報、卸由来の非公開データは含まれていません。
-
-含まれているCSVは、公開用に作成したダミーデータです。
+このリポジトリには患者情報、実店舗の在庫データ、仕入条件、卸由来の非公開データは含めません。公開用サンプルはすべてダミーデータです。
