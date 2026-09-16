@@ -1,0 +1,6 @@
+﻿product code,item name,specification,maker,stock quantity,unit,store name
+9000000002001,Sample Alpha 5mg,100 tablets,Demo Pharma,6,box,Demo Pharmacy A
+9000000002002,Sample Beta 10mg,100 tablets,Fictional Labs Inc.,4,box,Demo Pharmacy A
+9000000002003,Zero Stock 20mg,100 tablets,Example Pharma,0,box,Demo Pharmacy A
+9000000002004,Not Targeted 30mg,100 tablets,Example Pharma,5,box,Demo Pharmacy A
+9000000002099,Inventory Only 40mg,100 tablets,Example Labs,2,box,Demo Pharmacy A
